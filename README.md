@@ -98,4 +98,4 @@ This is not a Compose component, but it is possible to use traditionals Views li
 
 ## License
 ShrinkWrapTextView is available under the MIT license. See the [LICENSE](./LICENSE)
-file for more info.}
+file for more info.
