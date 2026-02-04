@@ -20,7 +20,9 @@
         android:paddingEnd="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:maxWidth="200dp"
+        android:maxWidth="300dp"
+        android:drawableEnd="@mipmap/ic_launcher_round"
+        android:drawablePadding="8dp"
         custom:shrinkWrap="true"
         />
 
@@ -70,23 +72,25 @@
         />
 
     <com.example.shrinkwrap.MyKotlinButton
-        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="200dp"
+        android:maxWidth="280dp"
         android:padding="8dp"
         android:textSize="16sp"
         android:text="This is a ShrinkWrapped Button"
+        android:drawableStart="@mipmap/ic_launcher_round"
+        android:drawablePadding="8dp"
         />
 
-    <Button
-        style="@style/Widget.AppCompat.Button"
+    <androidx.appcompat.widget.AppCompatButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="200dp"
+        android:maxWidth="280dp"
         android:padding="8dp"
         android:textSize="16sp"
         android:text="This is not a ShrinkWrapped Button"
+        android:drawableStart="@mipmap/ic_launcher_round"
+        android:drawablePadding="8dp"
         />
 
 </LinearLayout>

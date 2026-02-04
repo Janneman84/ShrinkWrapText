@@ -40,7 +40,7 @@ Add below lines to apps' `build.gradle`:
 
 ```groovy
 dependencies {
-	implementation 'com.github.Janneman84:ShrinkWrapTextView:0.2.2'
+	implementation 'com.github.Janneman84:ShrinkWrapTextView:0.3.0'
 }
 ```
 

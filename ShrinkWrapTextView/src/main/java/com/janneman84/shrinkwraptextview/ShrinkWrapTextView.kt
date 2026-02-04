@@ -23,8 +23,8 @@ import kotlin.math.ceil
 
 open class ShrinkWrapTextView : AppCompatTextView {
     constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { checkShrinkWrapAttribute(attrs) }
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { checkShrinkWrapAttribute(attrs) }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
 
     /** Set to false to disable shrink wrapping. */
     var shrinkWrap = true
@@ -47,8 +47,8 @@ open class ShrinkWrapTextView : AppCompatTextView {
 // Button is a subclass of TextView, so the code of this class is exactly the same as ShrinkWrapTextView.
 open class ShrinkWrapButton : AppCompatButton {
     constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { checkShrinkWrapAttribute(attrs) }
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { checkShrinkWrapAttribute(attrs) }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
 
     /** Set to false to disable shrink wrapping. */
     var shrinkWrap = true
@@ -151,15 +151,10 @@ private fun TextView.actuallyMeasureShrinkWrappedWidth(): Int {
     }
 
     // Get the width of the largest line.
-    var lineWidth = 0f
-    for (i in 0 until lineCount) {
-        lineWidth = lineWidth.coerceAtLeast(layout.getLineMax(i))
-    }
+    val maxLineWidth = ceil((0 until layout.lineCount).maxOfOrNull { layout.getLineMax(it) } ?: 0.0f).toInt()
 
-    // Set width equal to that of the largest line + padding.
-    val width = ceil(lineWidth.toDouble()).toInt() + paddingLeft + paddingRight
-
-    return width
+    // Replace full text width with shrink wrapped text width.
+    return measuredWidth - layout.width + maxLineWidth
 }
 
 /**
