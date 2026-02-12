@@ -36,7 +36,6 @@ open class ShrinkWrapTextView : AppCompatTextView {
         val width = actuallyMeasureShrinkWrappedWidth()
         if (width < measuredWidth) {
             setMeasuredDimension(width, measuredHeight)
-            paddingLayoutHack()
         }
     }
 }
@@ -60,7 +59,6 @@ open class ShrinkWrapButton : AppCompatButton {
         val width = actuallyMeasureShrinkWrappedWidth()
         if (width < measuredWidth) {
             setMeasuredDimension(width, measuredHeight)
-            paddingLayoutHack()
         }
     }
 }
@@ -94,18 +92,7 @@ fun TextView.measureShrinkWrappedWidth(): Int {
         "No layout, make sure to only call this function inside onMeasure() and super.onMeasure() is called before this."
     })
 
-    val width = actuallyMeasureShrinkWrappedWidth()
-
-    if (width >= measuredWidth) {
-        return measuredWidth
-    }
-
-    // Set largest line width + horizontal padding as width and keep the height the same.
-    try {
-        return width
-    } finally {
-        paddingLayoutHack()
-    }
+    return actuallyMeasureShrinkWrappedWidth()
 }
 
 private fun TextView.checkShrinkWrapAttribute(attrs: AttributeSet?): Boolean {
@@ -150,19 +137,18 @@ private fun TextView.actuallyMeasureShrinkWrappedWidth(): Int {
         return measuredWidth
     }
 
-    // Get the width of the largest line.
-    val maxLineWidth = ceil((0 until layout.lineCount).maxOfOrNull { layout.getLineMax(it) } ?: 0.0f).toInt()
-
     // Replace full text width with shrink wrapped text width.
-    return measuredWidth - layout.width + maxLineWidth
-}
+    val shrinkWrappedWidth = measuredWidth - layout.width + ceil((0 until layout.lineCount).maxOfOrNull { layout.getLineMax(it) } ?: 0.0f).toInt()
 
-/**
- * Apparently this somehow triggers some layout stuff.
- * Without this right aligned text would get clipped, unless the TextView is wrapped inside a RelativeLayout.
- * */
-private fun TextView.paddingLayoutHack() {
+    if (shrinkWrappedWidth >= measuredWidth) {
+        return measuredWidth
+    }
+
+    // Apparently this somehow invalidates/triggers some layout stuff.
+    // Without this right aligned text would get clipped, unless the TextView is wrapped inside a RelativeLayout.
+    // Alternatively, `text=text` works too
     setPadding(paddingLeft - 1, paddingTop, paddingRight + 1, paddingBottom)
     setPadding(paddingLeft + 1, paddingTop, paddingRight - 1, paddingBottom)
-}
 
+    return shrinkWrappedWidth
+}
