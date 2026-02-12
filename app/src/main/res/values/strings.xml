@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShrinkWrap test app</string>
+    <string name="title_activity_main_compose">CompShrinkWrapText</string>
+    <string name="title_activity_main_xml">XMLShrinkWrapText</string>
 </resources>

@@ -43,7 +43,7 @@ afterEvaluate {
                 from(components.getByName("release"))
                 groupId = "Janneman84"
                 artifactId = "ShrinkWrapTextView"
-                version = "0.3.0"
+                version = "0.3.1"
             }
         }
     }
