@@ -37,13 +37,16 @@ dependencyResolutionManagement {
 }
 ```
 
-Add one of below's lines to your apps' `build.gradle`:
+Add one of below's implementations to your apps' `build.gradle`:
 
 ```kotlin
 dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapTextView:ShrinkWrapTextView:0.3.2") //XML only
-	implementation("com.github.Janneman84.ShrinkWrapTextView:ShrinkWrapText:0.3.2") //Compose only
-	implementation("com.github.Janneman84:ShrinkWrapTextView:0.3.2") //Both
+	// XML only
+	implementation("com.github.Janneman84.ShrinkWrapTextView:ShrinkWrapTextView:0.3.2")
+    // Compose only
+	implementation("com.github.Janneman84.ShrinkWrapTextView:ShrinkWrapText:0.3.2")
+	// Both XML and Compose
+	implementation("com.github.Janneman84:ShrinkWrapTextView:0.3.2")
 }
 ```
 <details>
@@ -100,7 +103,10 @@ override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 @Override
 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec); // Call super first!
-    setMeasuredDimension(ShrinkWrapTextViewKt.measureShrinkWrappedWidth(this), getMeasuredHeight());
+    setMeasuredDimension(
+		ShrinkWrapTextViewKt.measureShrinkWrappedWidth(this),
+		getMeasuredHeight()
+	);
 }
 ```
 </details>
