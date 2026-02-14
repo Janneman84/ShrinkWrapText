@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.shrinkwrap.ui.theme.ShrinkWrapTestAppTheme
-import com.janneman84.shrinkwraptext.Text
+import com.janneman84.shrinkwrapkmp.Text
 
 class MainActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

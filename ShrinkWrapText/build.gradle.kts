@@ -41,20 +41,8 @@ android {
 }
 
 dependencies {
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
     implementation(platform(libs.androidx.compose.bom))
-//    implementation(libs.androidx.compose.runtime)
-//    implementation(libs.androidx.compose.ui.text)
-//    implementation(libs.androidx.activity.compose)
-//    implementation(libs.androidx.material3)
-//    implementation(libs.core.ktx)
-//    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 afterEvaluate {

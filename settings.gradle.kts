@@ -23,3 +23,4 @@ rootProject.name = "ShrinkWrap test app"
 include(":app")
 include(":ShrinkWrapTextView")
 include(":ShrinkWrapText")
+include(":ShrinkWrapKMP")
