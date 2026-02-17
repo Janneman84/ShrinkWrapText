@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("maven-publish")
 }
@@ -28,16 +27,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar() // Optional, publish source code
+        }
     }
-
-    buildFeatures {
-        compose = true
-    }
-//    composeOptions {
-//        kotlinCompilerExtensionVersion = compose_version
-//    }
 }
 
 dependencies {
@@ -48,8 +42,8 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            create("release", MavenPublication::class.java) {
-                from(components.getByName("release"))
+            create<MavenPublication>("release") {
+                from(components["release"])
                 groupId = "Janneman84"
                 artifactId = "ShrinkWrapText"
                 version = "0.1.0"

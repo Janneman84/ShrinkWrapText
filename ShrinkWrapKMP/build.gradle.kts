@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.apache.ivy.core.module.id.ArtifactId
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -7,7 +9,6 @@ plugins {
 }
 
 kotlin {
-
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
@@ -99,19 +100,20 @@ kotlin {
             }
         }
     }
-
 }
+
+group = "com.github.Janneman84"
+version = "0.1.0"
 
 afterEvaluate {
     publishing {
         publications {
-            create("release", MavenPublication::class.java) {
-//              create<MavenPublication>("release") {
-//                from(components.getByName("commonMain"))
-                groupId = "Janneman84"
-                artifactId = "ShrinkWrapKMP"
-                version = "0.1.0"
-            }
+//            create<MavenPublication>("release") {
+//                from(components["release"])
+//                groupId = "Janneman84"
+//                artifactId = "ShrinkWrapKMP"
+//                version = "0.1.0"
+//            }
         }
     }
 }
