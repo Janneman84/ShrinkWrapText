@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
     alias(libs.plugins.kotlin.compose)
-//    id("maven-publish")
+    id("maven-publish")
 }
 
 kotlin {
@@ -100,6 +100,8 @@ kotlin {
             }
         }
     }
+    group = "Janneman84"
+    version = "0.1.2"
 }
 
 //afterEvaluate {
