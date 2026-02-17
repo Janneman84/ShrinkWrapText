@@ -42,11 +42,11 @@ Add one of below's implementations to your apps' `build.gradle`:
 ```kotlin
 dependencies {
 	// XML only
-	implementation("com.github.Janneman84.ShrinkWrapTextView:ShrinkWrapTextView:0.3.2")
+	implementation("com.github.Janneman84.ShrinkWrapTextView:XML:0.3.6")
     // Compose only
-	implementation("com.github.Janneman84.ShrinkWrapTextView:ShrinkWrapText:0.3.2")
+	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.3.6")
 	// Both XML and Compose
-	implementation("com.github.Janneman84:ShrinkWrapTextView:0.3.2")
+	implementation("com.github.Janneman84:ShrinkWrapTextView:0.3.6")
 }
 ```
 <details>
@@ -113,8 +113,8 @@ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
 <details>
   <summary><b>How to use (Compose)</b></summary>
-<br>
 
+### Option 1
 In Compose just add the `shrinkWrap` argument to enable shrink wrapping of `Text` and `BasicText` elements:
 ```kotlin
 import com.janneman84.shrinkwraptext.Text
@@ -135,6 +135,21 @@ Column {
 }
 ```
 
+### Option 2
+If option 1 doesn't work for you you can also use the `ShrinkWrap` element and place your own (custom) Text element inside:
+```kotlin
+import com.janneman84.shrinkwraptext.ShrinkWrap
+```
+```kotlin
+ShrinkWrap { measureText, onTextLayout ->
+     CustomText(
+         "This is shrink-wrapped text.",
+         modifier = Modifier.layout(measureText), // Put layout() at the end of the chain.
+         onTextLayout = onTextLayout,
+     )
+ }
+```
+Make sure to put layout() at the end of the modifier chain, or else you may get unexpected results.
 </details>
 
 ## License
