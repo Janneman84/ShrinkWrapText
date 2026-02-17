@@ -44,7 +44,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
                 groupId = "Janneman84"
-                artifactId = "ShrinkWrapTextView"
+                artifactId = "XML"
                 version = "0.3.1"
             }
         }

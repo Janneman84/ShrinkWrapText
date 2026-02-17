@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
     alias(libs.plugins.kotlin.compose)
-    id("maven-publish")
+//    id("maven-publish")
 }
 
 kotlin {
@@ -102,18 +102,15 @@ kotlin {
     }
 }
 
-group = "com.github.Janneman84"
-version = "0.1.0"
-
-afterEvaluate {
-    publishing {
-        publications {
+//afterEvaluate {
+//    publishing {
+//        publications {
 //            create<MavenPublication>("release") {
 //                from(components["release"])
 //                groupId = "Janneman84"
 //                artifactId = "ShrinkWrapKMP"
 //                version = "0.1.0"
 //            }
-        }
-    }
-}
+//        }
+//    }
+//}

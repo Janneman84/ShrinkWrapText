@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorProducer
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
@@ -22,6 +25,87 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.TextUnit
 import kotlin.math.ceil
+
+private class SWSettings(var shrinkWrap: Boolean, var maxLineWidth: Float)
+
+private fun getMeasureText(s: SWSettings): MeasureScope.(Measurable, Constraints) -> MeasureResult {
+    return { measurable, constraints ->
+        s.shrinkWrap = s.shrinkWrap && constraints.maxWidth > constraints.minWidth
+        val placeable1 = measurable.measure(constraints)
+        // onTextLayout gets called right after measure(), where maxLineWidth is determined
+
+        // If fewer than 2 lines, maxLineWidth stays -1f and the text is placed as is
+        if (!s.shrinkWrap || s.maxLineWidth == -1f) {
+            layout(placeable1.width, placeable1.height) {
+                placeable1.placeRelative(0, 0)
+            }
+        } else {
+            // Measure again, this lays out the text, now with the maxLineWidth as maxWidth.
+            // This ensures any right or center aligned text shows properly.
+            val placeable2 = measurable.measure(
+                Constraints(
+                    minWidth = constraints.minWidth,
+                    maxWidth = ceil(s.maxLineWidth).toInt(),
+                    minHeight = constraints.minHeight,
+                    maxHeight = constraints.maxHeight
+                )
+            )
+            // onTextLayout gets called again, but does nothing we need now
+
+            layout(ceil(s.maxLineWidth).toInt(), placeable2.height) {
+                placeable2.placeRelative(0, 0)
+                s.maxLineWidth = -1f
+            }
+        }
+    }
+}
+
+private fun getOnTextLayout(s: SWSettings, onTextLayout: ((TextLayoutResult) -> Unit)?): (TextLayoutResult) -> Unit {
+    return {
+        if (s.shrinkWrap && s.maxLineWidth == -1f && it.lineCount > 1) {
+            for (i in 0 until it.lineCount) {
+                val width = it.getLineRight(i) - it.getLineLeft(i)
+                if (width > s.maxLineWidth) {
+                    s.maxLineWidth = width
+                }
+            }
+        } else {
+            onTextLayout?.invoke(it)
+        }
+    }
+}
+
+/**
+ * If a regular Text or BasicText with `shrinkWrap` argument isn't an option for you,
+ * you can als use this `ShrinkWrap` element and put a (custom) text element inside.
+ * It provides two callbacks that you should place in modifier.layout() and onTextLayout:
+ *
+ *         ShrinkWrap { measureText, onTextLayout ->
+ *             CustomText(
+ *                 "This is shrink-wrapped text.",
+ *                 modifier = Modifier.layout(measureText), // Put layout() at the end of the chain.
+ *                 onTextLayout = onTextLayout,
+ *             )
+ *         }
+ *
+ * Make sure to put layout() at the end of the modifier chain, or else you may get unexpected results.
+ *
+ * `ShrinkWrap` ensures that a text box always tightly fits around its text.
+ * Normally when a text box contains more than one line its width gets maxed out,
+ * which sometimes causes ugly gaps. A good use case is chat message bubbles.
+ */
+@Composable
+fun ShrinkWrap(
+    textContent: @Composable (
+        measureText: MeasureScope.(Measurable, Constraints) -> MeasureResult,
+        onTextLayout: (TextLayoutResult) -> Unit) -> Unit
+) {
+    val settings = SWSettings(true, -1f)
+    textContent(
+        getMeasureText(settings),
+        getOnTextLayout(settings, null)
+    )
+}
 
 @Composable
 private fun ShrinkWrapText(
@@ -48,60 +132,26 @@ private fun ShrinkWrapText(
     shrinkWrap: Boolean,
     basic: Boolean = false
 ) {
-    var maxLineWidth = -1f
-    var shrinkWrap = shrinkWrap
-
-    val layoutModifier = modifier.layout({ measurable, constraints ->
-        shrinkWrap = shrinkWrap && constraints.maxWidth > constraints.minWidth
-        val placeable1 = measurable.measure(constraints)
-
-        if (!shrinkWrap || maxLineWidth == -1f) {
-            layout(placeable1.width, placeable1.height) {
-                placeable1.placeRelative(0, 0)
-            }
-        } else {
-            val placeable2 = measurable.measure(
-                Constraints(
-                    minWidth = constraints.minWidth,
-                    maxWidth = ceil(maxLineWidth).toInt(),
-                    minHeight = constraints.minHeight,
-                    maxHeight = constraints.maxHeight
-                )
-            )
-            layout(ceil(maxLineWidth).toInt(), placeable2.height) {
-                placeable2.placeRelative(0, 0)
-            }
-        }
-    })
-
-    val textLayout: (TextLayoutResult) -> Unit = {
-        if (shrinkWrap && maxLineWidth == -1f && it.lineCount > 1) {
-            for (i in 0 until it.lineCount) {
-                val width = it.getLineRight(i) - it.getLineLeft(i)
-                if (width > maxLineWidth) {
-                    maxLineWidth = width
-                }
-            }
-        }
-        onTextLayout?.invoke(it)
-    }
+    val settings = SWSettings(shrinkWrap, -1f)
+    val measureText = getMeasureText(settings)
+    val textLayout = getOnTextLayout(settings, onTextLayout)
 
     if (basic) {
         if (text != null) {
             BasicText(
-                text = text, modifier = layoutModifier, style = style, onTextLayout = textLayout, overflow = overflow,
+                text = text, modifier = modifier.layout(measureText), style = style, onTextLayout = textLayout, overflow = overflow,
                 softWrap = softWrap, maxLines = maxLines, minLines = minLines, color = colorProducer
             )
         } else {
             BasicText(
-                text = annotatedText!!, modifier = layoutModifier, style = style, onTextLayout = textLayout, overflow = overflow,
+                text = annotatedText!!, modifier = modifier.layout(measureText), style = style, onTextLayout = textLayout, overflow = overflow,
                 softWrap = softWrap, maxLines = maxLines, minLines = minLines, inlineContent = inlineContent ?: mapOf(), color = colorProducer
             )
         }
     } else {
         if (text != null) {
             Text(
-                text = text, modifier = layoutModifier,
+                text = text, modifier = modifier.layout(measureText),
                 color = color, fontSize = fontSize, fontStyle = fontStyle, fontWeight = fontWeight, fontFamily = fontFamily,
                 letterSpacing = letterSpacing, textDecoration = textDecoration, textAlign = textAlign,
                 lineHeight = lineHeight, overflow = overflow, softWrap = softWrap, maxLines = maxLines, minLines = minLines,
@@ -110,7 +160,7 @@ private fun ShrinkWrapText(
         }
         else {
             Text(
-                annotatedText!!, modifier = layoutModifier,
+                annotatedText!!, modifier = modifier.layout(measureText),
                 color = color, fontSize = fontSize, fontStyle = fontStyle, fontWeight = fontWeight, fontFamily = fontFamily,
                 letterSpacing = letterSpacing, textDecoration = textDecoration, textAlign = textAlign,
                 lineHeight = lineHeight, overflow = overflow, softWrap = softWrap, maxLines = maxLines, minLines = minLines,

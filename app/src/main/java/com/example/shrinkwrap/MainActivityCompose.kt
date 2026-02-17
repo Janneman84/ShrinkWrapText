@@ -14,10 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.shrinkwrap.ui.theme.ShrinkWrapTestAppTheme
-import com.janneman84.shrinkwrapkmp.Text
+import com.janneman84.shrinkwraptext.Text
+import com.janneman84.shrinkwraptext.ShrinkWrap
 
 class MainActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +51,13 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             modifier = modifier.widthIn(0.dp, 140.dp).background(Color.Green),
             shrinkWrap = true
         )
+        ShrinkWrap { measureText, onTextLayout ->
+            Text(
+                text = "Hello $name! How are you today?",
+                modifier = modifier.widthIn(0.dp, 140.dp).background(Color.Magenta).layout(measureText),
+                onTextLayout = onTextLayout,
+            )
+        }
     }
 }
 

@@ -45,7 +45,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
                 groupId = "Janneman84"
-                artifactId = "ShrinkWrapText"
+                artifactId = "Compose"
                 version = "0.1.0"
             }
         }
