@@ -39,33 +39,33 @@ kotlin {
     val xcfName = "ShrinkWrapTextKMPKit"
 
     iosX64 {
-//        binaries.framework {
-//            baseName = xcfName
-//        }
+        binaries.framework {
+            baseName = xcfName
+        }
     }
 
     iosArm64 {
-//        binaries.framework {
-//            baseName = xcfName
-//        }
+        binaries.framework {
+            baseName = xcfName
+        }
     }
 
     iosSimulatorArm64 {
-//        binaries.framework {
-//            baseName = xcfName
-//        }
+        binaries.framework {
+            baseName = xcfName
+        }
     }
 
     macosArm64 {
-//        binaries.executable {
-//            baseName = xcfName
-//        }
+        binaries.executable {
+            baseName = xcfName
+        }
     }
 
     macosX64 {
-//        binaries.executable {
-//            baseName = xcfName
-//        }
+        binaries.executable {
+            baseName = xcfName
+        }
     }
 
 //    linuxX64 {
