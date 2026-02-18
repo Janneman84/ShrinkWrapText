@@ -1,6 +1,6 @@
-//@file:OptIn(ExperimentalWasmDsl::class)
-//
-//import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -17,7 +17,7 @@ kotlin {
     androidLibrary {
         namespace = "shrinkwrap.compose"
         compileSdk = 36
-        minSdk = 24
+        minSdk = 21
 
         withHostTestBuilder {
         }
@@ -39,34 +39,34 @@ kotlin {
     val xcfName = "ShrinkWrapTextKMPKit"
 
     iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
+//        binaries.framework {
+//            baseName = xcfName
+//        }
     }
 
     iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
+//        binaries.framework {
+//            baseName = xcfName
+//        }
     }
 
     iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
+//        binaries.framework {
+//            baseName = xcfName
+//        }
     }
 
-//    macosArm64 {
+    macosArm64 {
 //        binaries.executable {
 //            baseName = xcfName
 //        }
-//    }
-//
-//    macosX64 {
+    }
+
+    macosX64 {
 //        binaries.executable {
 //            baseName = xcfName
 //        }
-//    }
+    }
 
 //    linuxX64 {
 //        binaries.executable {
@@ -80,11 +80,11 @@ kotlin {
 //        }
 //    }
 
-//    jvm()
-//    js().browser()
-//    js().nodejs()
-//    wasmJs().browser()
-//    wasmJs().nodejs()
+    jvm()
+    js().browser()
+    js().nodejs()
+    wasmJs().browser()
+    wasmJs().nodejs()
 //    wasmWasi().nodejs()
 
     // Source set declarations.

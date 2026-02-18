@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.shrinkwraptest"
-        minSdk = 24
+        minSdk = 23
         targetSdk = 36
         versionCode = 3
         versionName = "0.3.7"
