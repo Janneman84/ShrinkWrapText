@@ -3,7 +3,7 @@ package com.example.shrinkwrap;
 import android.content.Context;
 import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatTextView;
-import com.janneman84.shrinkwraptextview.ShrinkWrapTextViewKt;
+import shrinkwrap.xml.ShrinkWrapTextViewKt;
 
 /**
  * This is an example of a TextView subclass (Java) that does not subclass from ShrinkWrapTextView.

@@ -1,4 +1,6 @@
-import org.gradle.internal.impldep.org.apache.ivy.core.module.id.ArtifactId
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -13,9 +15,9 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "com.example.shrinkwrapkmp"
+        namespace = "shrinkwrap.compose"
         compileSdk = 36
-        minSdk = 24
+        minSdk = 21
 
         withHostTestBuilder {
         }
@@ -34,25 +36,56 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "ShrinkWrapKMPKit"
+    val xcfName = "ShrinkWrapTextKMPKit"
 
     iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
+//        binaries.framework {
+//            baseName = xcfName
+//        }
     }
 
     iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
+//        binaries.framework {
+//            baseName = xcfName
+//        }
     }
 
     iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
+//        binaries.framework {
+//            baseName = xcfName
+//        }
     }
+
+    macosArm64 {
+//        binaries.executable {
+//            baseName = xcfName
+//        }
+    }
+
+    macosX64 {
+//        binaries.executable {
+//            baseName = xcfName
+//        }
+    }
+
+//    linuxX64 {
+//        binaries.executable {
+//            baseName = xcfName
+//        }
+//    }
+
+//    linuxArm64 {
+//        binaries.executable {
+//            baseName = xcfName
+//        }
+//    }
+
+    jvm()
+    js().browser()
+    js().nodejs()
+    wasmJs().browser()
+    wasmJs().nodejs()
+//    wasmWasi().nodejs()
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
@@ -101,18 +134,5 @@ kotlin {
         }
     }
     group = "Janneman84"
-    version = "0.1.2"
+    version = "0.3.7"
 }
-
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            create<MavenPublication>("release") {
-//                from(components["release"])
-//                groupId = "Janneman84"
-//                artifactId = "ShrinkWrapKMP"
-//                version = "0.1.0"
-//            }
-//        }
-//    }
-//}

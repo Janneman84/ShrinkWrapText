@@ -1,4 +1,4 @@
-package com.janneman84.shrinkwraptextview
+package shrinkwrap.xml
 
 import android.content.Context
 import android.util.AttributeSet

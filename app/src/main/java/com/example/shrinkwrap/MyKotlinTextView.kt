@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
-import com.janneman84.shrinkwraptextview.measureShrinkWrappedWidth
+import shrinkwrap.xml.measureShrinkWrappedWidth
 
 /**
  * This is an example of a `TextView` subclass (Kotlin) that does not subclass from `ShrinkWrapTextView`.

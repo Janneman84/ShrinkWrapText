@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.shrinkwraptest"
-        minSdk = 24
+        minSdk = 23
         targetSdk = 36
         versionCode = 3
-        versionName = "0.3.3"
+        versionName = "0.3.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,7 +52,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation(project(":ShrinkWrapTextView"))
-    implementation(project(":ShrinkWrapText"))
-    implementation(project(":ShrinkWrapKMP"))
+    implementation(project(":XML"))
+    implementation(project(":Compose"))
 }
