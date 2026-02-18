@@ -1,10 +1,9 @@
-<img id="badge" src="https://jitpack.io/v/Janneman84/ShrinkWrapTextView.svg"> <img height="1" img width="1" alt="shrinkwrap" src="https://github.com/user-attachments/assets/10178d16-cfbf-465a-a08a-9cbd39a636c3"/>
-[![Android](https://img.shields.io/badge/XML-Compose-brightgreen)](#)
+<img id="badge" src="https://jitpack.io/v/Janneman84/ShrinkWrapTextView.svg"> [![XML Compose](https://img.shields.io/badge/XML-Compose-brightgreen)](#)
+[![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)](#)
+[![KMP](https://img.shields.io/badge/Kotlin-Multiplatform-%237f52ff?logo=kotlin)](#)<img height="1" img width="1" alt="shrinkwrap" src="https://github.com/user-attachments/assets/10178d16-cfbf-465a-a08a-9cbd39a636c3"/>
 
-
-
-# ShrinkWrapTextView
-Fixes oversized Text/TextViews (and Buttons) in Android apps:
+# ShrinkWrapText
+Fixes oversized Text/TextViews (and Buttons) in <b>Android</b> and <b>KMP</b> apps:
 
 <img width="203" height="336" alt="shrinkwrap" src="https://github.com/user-attachments/assets/43707776-48f7-40ad-9e27-3315c1a4386a" />
 
@@ -15,9 +14,9 @@ This is particularly useful for chat bubbles!
 
 ## Explanation
 
-Have you ever noticed that all chat apps on iOS and Android have one common difference? Once you see it you can't unsee! The difference is sizing of the chat bubbles. On Android chat bubbles that have more than one line of text are always maxed out to their maximum width. This often results in bubbles that are just too big. `ShrinkWrapTextView` fixes this issue, it's super easy to install so give it a try!
+Have you ever noticed that all chat apps on iOS and Android have one common difference? Once you see it you can't unsee! The difference is sizing of the chat bubbles. On Android chat bubbles that have more than one line of text are always maxed out to their maximum width. This often results in bubbles that are just too big. `ShrinkWrapText` fixes this issue, it's super easy to install so give it a try!
 
-This shrink wrapping technology is already being used by Signal messenger.
+This shrink-wrapping technology is already being used by Signal messenger.
 
 This package offers a solution for both traditional XML and Compose based apps.
 
@@ -37,31 +36,29 @@ dependencyResolutionManagement {
 }
 ```
 
-Add one of below's implementations to your apps' `build.gradle`:
+Add one or more of below's implementations to your apps' `build.gradle`:
 
 ```kotlin
 dependencies {
-	// XML only
-	implementation("com.github.Janneman84.ShrinkWrapTextView:XML:0.3.6")
-    // Compose only
-	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.3.6")
-	// Both XML and Compose
-	implementation("com.github.Janneman84:ShrinkWrapTextView:0.3.6")
+	// XML (Android)
+	implementation("com.github.Janneman84.ShrinkWrapTextView:XML:0.4.0")
+    // Compose (Android/KMP)
+	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.4.0")
 }
 ```
 <details>
   <summary><b>How to use (XML)</b></summary>
 <br>
 	
-There are three ways to shrink wrap your TextViews and Buttons.
+There are three ways to shrink-wrap your TextViews and Buttons.
 ### Option 1
-In your layout xml replace the `TextView`/`Button` class with `ShrinkWrapTextView`/`ShrinkWrapButton`. You can optionally use the custom attribute `shrinkWrap` to turn shrink wrapping on and off. You should see it in action in the Designer (preview) pane.
+In your layout xml replace the `TextView`/`Button` class with `ShrinkWrapTextView`/`ShrinkWrapButton`. You can optionally use the custom attribute `shrinkWrap` to turn shrink-wrapping on and off. You should see it in action in the Designer (preview) pane.
 
 ```xml
 xmlns:custom="http://schemas.android.com/apk/res-auto"
 ```
 ```xml
-<com.janneman84.shrinkwraptextview.ShrinkWrapTextView
+<shrinkwrap.xml.ShrinkWrapTextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:maxWidth="200dp"
@@ -71,9 +68,9 @@ xmlns:custom="http://schemas.android.com/apk/res-auto"
 />
 ```
 ### Option 2
-If you have subclassed from `AppCompatTextView` or `AppCompatButton`, have them subclass from `ShrinkWrapTextView`/`ShrinkWrapButton` instead. You can use the property `shrinkWrap` to turn shrink wrapping on or off.
+If you have subclassed from `AppCompatTextView` or `AppCompatButton`, have them subclass from `ShrinkWrapTextView`/`ShrinkWrapButton` instead. You can use the property `shrinkWrap` to turn shrink-wrapping on or off.
 ```kotlin
-import com.janneman84.shrinkwraptextview.ShrinkWrapTextView
+import shrinkwrap.xml.*
 ```
 ```kotlin
 class MyTextView(context: Context, attrs: AttributeSet?) : ShrinkWrapTextView(context, attrs) {
@@ -88,7 +85,7 @@ class MyButton(context: Context, attrs: AttributeSet?) : ShrinkWrapButton(contex
 ### Option 3
 If changing the superclass isn't an option you can also override `onMeasure()` in your own `TextView`/`Button` subclass instead and call `setMeasuredDimension()` like this:
 ```kotlin
-import com.janneman84.shrinkwraptextview.ShrinkWrapTextView
+import shrinkwrap.xml.*
 ```
 ```kotlin
 // Kotlin
@@ -115,10 +112,9 @@ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
   <summary><b>How to use (Compose)</b></summary>
 
 ### Option 1
-In Compose just add the `shrinkWrap` argument to enable shrink wrapping of `Text` and `BasicText` elements:
+In Compose just add the `shrinkWrap` argument to enable shrink-wrapping of `Text` and `BasicText` elements:
 ```kotlin
-import com.janneman84.shrinkwraptext.Text
-import com.janneman84.shrinkwraptext.BasicText
+import shrinkwrap.compose.*
 ```
 ```kotlin
 Column {
@@ -138,18 +134,18 @@ Column {
 ### Option 2
 If option 1 doesn't work for you you can also use the `ShrinkWrap` element and place your own (custom) Text element inside:
 ```kotlin
-import com.janneman84.shrinkwraptext.ShrinkWrap
+import import shrinkwrap.compose.*
 ```
 ```kotlin
 ShrinkWrap { measureText, onTextLayout ->
      CustomText(
          "This is shrink-wrapped text.",
-         modifier = Modifier.layout(measureText), // Put layout() at the end of the chain.
+         modifier = Modifier.layout(measureText), // Put layout(measureText) last.
          onTextLayout = onTextLayout,
      )
  }
 ```
-Make sure to put layout() at the end of the modifier chain, or else you may get unexpected results.
+Make sure to put `layout(measureText)` at the end of the modifier chain, or else you may get unexpected results.
 </details>
 
 ## License
