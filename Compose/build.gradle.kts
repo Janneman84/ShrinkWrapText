@@ -56,17 +56,17 @@ kotlin {
         }
     }
 
-    macosArm64 {
-        binaries.executable {
-            baseName = xcfName
-        }
-    }
-
-    macosX64 {
-        binaries.executable {
-            baseName = xcfName
-        }
-    }
+//    macosArm64 {
+//        binaries.executable {
+//            baseName = xcfName
+//        }
+//    }
+//
+//    macosX64 {
+//        binaries.executable {
+//            baseName = xcfName
+//        }
+//    }
 
 //    linuxX64 {
 //        binaries.executable {
@@ -80,9 +80,9 @@ kotlin {
 //        }
 //    }
 
-    jvm()
-    js().browser()
-    js().nodejs()
+//    jvm()
+//    js().browser()
+//    js().nodejs()
 //    wasmJs().browser()
 //    wasmJs().nodejs()
 //    wasmWasi().nodejs()
