@@ -1,6 +1,6 @@
-@file:OptIn(ExperimentalWasmDsl::class)
-
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+//@file:OptIn(ExperimentalWasmDsl::class)
+//
+//import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -17,7 +17,7 @@ kotlin {
     androidLibrary {
         namespace = "shrinkwrap.compose"
         compileSdk = 36
-        minSdk = 21
+        minSdk = 24
 
         withHostTestBuilder {
         }
@@ -83,8 +83,8 @@ kotlin {
     jvm()
     js().browser()
     js().nodejs()
-    wasmJs().browser()
-    wasmJs().nodejs()
+//    wasmJs().browser()
+//    wasmJs().nodejs()
 //    wasmWasi().nodejs()
 
     // Source set declarations.
