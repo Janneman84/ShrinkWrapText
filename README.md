@@ -181,6 +181,8 @@ ShrinkWrap { measureText, onTextLayout ->
  }
 ```
 Make sure to put `layout(measureText)` at the end of the modifier chain, or else you may get unexpected results.
+
+You can optionally turn shrink-wrapping on/off with the first argument, like `ShrinkWrap(false) {...}`.
 </details>
 
 ## License
