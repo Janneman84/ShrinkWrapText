@@ -82,7 +82,10 @@ com.github.Janneman84.ShrinkWrapText:Compose-iosarm64:0.4.0
 	
 There are three ways to shrink-wrap your TextViews and Buttons.
 ### Option 1
-In your layout xml replace the `TextView`/`Button` class with `ShrinkWrapTextView`/`ShrinkWrapButton`. You can optionally use the custom attribute `shrinkWrap` to turn shrink-wrapping on and off. You should see it in action in the Designer (preview) pane.
+In your layout xml replace the `TextView` class with `ShrinkWrapTextView` or `ShrinkWrapMaterialTextView`.
+You can also replace the `Button` class with `ShrinkWrapButton` or `ShrinkWrapMaterialButton`.
+
+You can optionally use the custom attribute `shrinkWrap` to turn shrink-wrapping on and off. You should see it in action in the Designer (preview) pane.
 
 ```xml
 xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -98,7 +101,9 @@ xmlns:custom="http://schemas.android.com/apk/res-auto"
 />
 ```
 ### Option 2
-If you have subclassed from `AppCompatTextView` or `AppCompatButton`, have them subclass from `ShrinkWrapTextView`/`ShrinkWrapButton` instead. You can use the property `shrinkWrap` to turn shrink-wrapping on or off.
+If you have subclassed from `AppCompatTextView`/`AppCompatButton`/`MaterialTextView`/`MaterialButton`, have them subclass from `ShrinkWrapTextView`/`ShrinkWrapButton`/`ShrinkWrapMaterialTextView`/`ShrinkWrapMaterialButton` respectively.
+
+You can use the property `shrinkWrap` to turn shrink-wrapping on or off.
 ```kotlin
 import shrinkwrap.xml.*
 ```
