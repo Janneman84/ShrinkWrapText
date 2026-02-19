@@ -44,8 +44,8 @@ Add one or both of below's implementations to your apps' `build.gradle`:
 
 ```kotlin
 dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapTextView:XML:0.4.0") // XML
-	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.4.0") // Compose
+	implementation("com.github.Janneman84.ShrinkWrapText:XML:0.4.0") // XML
+	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.4.0") // Compose
 }
 ```
 </details>
@@ -58,20 +58,20 @@ With shared UI, use commonMain in `build.gradle` to target all platforms:
 
 ```kotlin
 commonMain.dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.4.0")
+	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.4.0")
 }
 ```
 Or use specific targets:
 ```
-com.github.Janneman84.ShrinkWrapTextView:Compose-wasm-js:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-macosarm64:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-iosx64:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-macosx64:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-android:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-jvm:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-js:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-iossimulatorarm64:0.4.0
-com.github.Janneman84.ShrinkWrapTextView:Compose-iosarm64:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-wasm-js:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-macosarm64:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-iosx64:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-macosx64:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-android:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-jvm:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-js:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-iossimulatorarm64:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-iosarm64:0.4.0
 ```
 </details>
 
@@ -179,6 +179,6 @@ Make sure to put `layout(measureText)` at the end of the modifier chain, or else
 </details>
 
 ## License
-ShrinkWrapTextView is available under the MIT license. See the [LICENSE](./LICENSE)
+ShrinkWrapText is available under the MIT license. See the [LICENSE](./LICENSE)
 file for more info.
 
