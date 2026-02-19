@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isGone
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textview.MaterialTextView
 import kotlin.math.ceil
 
 /**
@@ -41,10 +43,63 @@ open class ShrinkWrapTextView : AppCompatTextView {
 }
 
 /**
+ * This subclass fixes a sizing issue from the regular `TextView`.
+ * Normally, when the width is set to WRAP_CONTENT, the width will be maxed out when the text doesn't fit on one line.
+ * This often causes the view not to tightly fit the text, but cause a gap at the end instead.
+ * This commonly causes chat bubbles to look a bit different than they do on iOS.
+ * `ShrinkWrapTextView` addresses the issue.
+ *  Simply replace your regular `TextView` with this and the size will shrink to always tightly fit its content.
+ *  You can use the `shrinkWrap` property or the `custom:shrinkWrap` attribute to disable the shrink wrapping.
+ *  Alternatively, instead of using this class you can also use the `measureShrinkWrappedWidth()` function (see its doc for more info).
+ */
+
+open class ShrinkWrapMaterialTextView : MaterialTextView {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
+
+    /** Set to false to disable shrink wrapping. */
+    var shrinkWrap = true
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec) // This gives you access to lineCount, layout.getLineMax() and measuredHeight.
+        if (!shrinkWrap || isGone) { return }
+
+        val width = actuallyMeasureShrinkWrappedWidth()
+        if (width < measuredWidth) {
+            setMeasuredDimension(width, measuredHeight)
+        }
+    }
+}
+
+/**
  * Button version of `ShrinkWrapTextView`, check its documentation for information.
  */
 // Button is a subclass of TextView, so the code of this class is exactly the same as ShrinkWrapTextView.
 open class ShrinkWrapButton : AppCompatButton {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
+
+    /** Set to false to disable shrink wrapping. */
+    var shrinkWrap = true
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec) // This gives you access to lineCount, layout.getLineMax() and measuredHeight.
+        if (!shrinkWrap || isGone) { return }
+
+        val width = actuallyMeasureShrinkWrappedWidth()
+        if (width < measuredWidth) {
+            setMeasuredDimension(width, measuredHeight)
+        }
+    }
+}
+
+/**
+ * Button version of `ShrinkWrapTextView`, check its documentation for information.
+ */
+// Button is a subclass of TextView, so the code of this class is exactly the same as ShrinkWrapTextView.
+open class ShrinkWrapMaterialButton : MaterialButton {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }

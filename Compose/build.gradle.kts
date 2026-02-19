@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.android.lint)
     alias(libs.plugins.kotlin.compose)
     id("maven-publish")
 }
@@ -18,15 +17,6 @@ kotlin {
         namespace = "shrinkwrap.compose"
         compileSdk = 36
         minSdk = 21
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
     }
 
     // For iOS targets, this is also where you should
@@ -36,56 +26,17 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "ShrinkWrapTextKMPKit"
 
-    iosX64 {
-//        binaries.framework {
-//            baseName = xcfName
-//        }
-    }
-
-    iosArm64 {
-//        binaries.framework {
-//            baseName = xcfName
-//        }
-    }
-
-    iosSimulatorArm64 {
-//        binaries.framework {
-//            baseName = xcfName
-//        }
-    }
-
-    macosArm64 {
-//        binaries.executable {
-//            baseName = xcfName
-//        }
-    }
-
-    macosX64 {
-//        binaries.executable {
-//            baseName = xcfName
-//        }
-    }
-
-//    linuxX64 {
-//        binaries.executable {
-//            baseName = xcfName
-//        }
-//    }
-
-//    linuxArm64 {
-//        binaries.executable {
-//            baseName = xcfName
-//        }
-//    }
-
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+    macosArm64()
+    macosX64()
     jvm()
     js().browser()
     js().nodejs()
     wasmJs().browser()
     wasmJs().nodejs()
-//    wasmWasi().nodejs()
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
@@ -103,7 +54,7 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation(libs.kotlin.test)
+//                implementation(libs.kotlin.test)
             }
         }
 
@@ -115,13 +66,13 @@ kotlin {
             }
         }
 
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.junit)
-            }
-        }
+//        getByName("androidDeviceTest") {
+//            dependencies {
+//                implementation(libs.androidx.runner)
+//                implementation(libs.androidx.core)
+//                implementation(libs.androidx.junit)
+//            }
+//        }
 
         iosMain {
             dependencies {
@@ -134,5 +85,5 @@ kotlin {
         }
     }
     group = "Janneman84"
-    version = "0.3.7"
+    version = "0.4.0"
 }
