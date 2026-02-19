@@ -44,8 +44,8 @@ Add one or both of below's implementations to your apps' `build.gradle`:
 
 ```kotlin
 dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapText:XML:0.4.0") // XML
-	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.4.0") // Compose
+	implementation("com.github.Janneman84.ShrinkWrapText:XML:0.4.1") // XML
+	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.4.1") // Compose
 }
 ```
 </details>
@@ -58,20 +58,20 @@ With shared UI, use commonMain in `build.gradle` to target all platforms:
 
 ```kotlin
 commonMain.dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.4.0")
+	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.4.1")
 }
 ```
 Or use specific targets:
 ```
-com.github.Janneman84.ShrinkWrapText:Compose-wasm-js:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-macosarm64:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-iosx64:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-macosx64:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-android:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-jvm:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-js:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-iossimulatorarm64:0.4.0
-com.github.Janneman84.ShrinkWrapText:Compose-iosarm64:0.4.0
+com.github.Janneman84.ShrinkWrapText:Compose-wasm-js:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-macosarm64:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-iosx64:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-macosx64:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-android:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-jvm:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-js:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-iossimulatorarm64:0.4.1
+com.github.Janneman84.ShrinkWrapText:Compose-iosarm64:0.4.1
 ```
 </details>
 

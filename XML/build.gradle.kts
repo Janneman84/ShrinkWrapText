@@ -45,7 +45,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "Janneman84"
                 artifactId = "XML"
-                version = "0.4.0"
+                version = "0.4.1"
             }
         }
     }

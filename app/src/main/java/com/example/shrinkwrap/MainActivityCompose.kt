@@ -50,7 +50,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             modifier = modifier.widthIn(0.dp, 140.dp).background(Color.Green),
             shrinkWrap = true
         )
-        ShrinkWrap { measureText, onTextLayout ->
+        ShrinkWrap(true) { measureText, onTextLayout ->
             Text(
                 text = "Hello $name! How are you today?",
                 modifier = modifier.widthIn(0.dp, 140.dp).background(Color.Magenta).layout(measureText),

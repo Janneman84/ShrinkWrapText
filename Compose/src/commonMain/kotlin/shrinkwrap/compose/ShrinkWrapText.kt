@@ -94,11 +94,12 @@ private fun getOnTextLayout(s: SWSettings, onTextLayout: ((TextLayoutResult) -> 
  */
 @Composable
 fun ShrinkWrap(
+    shrinkWrap: Boolean = true,
     textContent: @Composable (
         measureText: MeasureScope.(Measurable, Constraints) -> MeasureResult,
         onTextLayout: (TextLayoutResult) -> Unit) -> Unit
 ) {
-    val settings = SWSettings(true, -1f)
+    val settings = SWSettings(shrinkWrap, -1f)
     textContent(
         getMeasureText(settings),
         getOnTextLayout(settings, null)
