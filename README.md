@@ -31,21 +31,51 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io")} //add this
+        maven { url = uri("https://jitpack.io")} // Add this
     }
 }
 ```
 
-Add one or more of below's implementations to your apps' `build.gradle`:
+<details>
+  <summary><b>Add dependencies (Android)</b></summary>
+<br>
+
+Add one or both of below's implementations to your apps' `build.gradle`:
 
 ```kotlin
 dependencies {
-	// XML (Android)
-	implementation("com.github.Janneman84.ShrinkWrapTextView:XML:0.4.0")
-    // Compose (Android/KMP)
+	implementation("com.github.Janneman84.ShrinkWrapTextView:XML:0.4.0") // XML
+	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.4.0") // Compose
+}
+```
+</details>
+
+<details>
+  <summary><b>Add dependencies (Kotlin Multiplatform)</b></summary>
+<br>
+
+With shared UI, use commonMain in `build.gradle` to target all platforms:
+
+```kotlin
+commonMain.dependencies {
 	implementation("com.github.Janneman84.ShrinkWrapTextView:Compose:0.4.0")
 }
 ```
+Or use specific targets:
+```
+com.github.Janneman84.ShrinkWrapTextView:Compose-wasm-js:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-macosarm64:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-iosx64:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-macosx64:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-android:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-jvm:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-js:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-iossimulatorarm64:0.4.0
+com.github.Janneman84.ShrinkWrapTextView:Compose-iosarm64:0.4.0
+```
+</details>
+
+# 
 <details>
   <summary><b>How to use (XML)</b></summary>
 <br>
