@@ -141,6 +141,25 @@ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 	);
 }
 ```
+### Known issue
+In some cases, using `ConstraintLayout` together with `app:layout_constrainedWidth="true"` and `android:layout_width="wrap_content"` may cause undesired results.
+This can be fixed easily with a few changes. Make it so `app:layout_constrainedWidth="true"` is set to a layout view and has its width set to `match_parent`. Then put the `ShrinkWrapTextView` as its subview.
+I put an example below. If you still have problems submit an issue so I can help.
+```xml
+<!--Example of fix when inside a ConstrainedLayout-->
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constrainedWidth="true"
+    >
+    <shrinkwrap.xml.ShrinkWrapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        />
+</FrameLayout>
+```
+# 
 </details>
 
 <details>
@@ -183,6 +202,7 @@ ShrinkWrap { measureText, onTextLayout ->
 Make sure to put `layout(measureText)` at the end of the modifier chain, or else you may get unexpected results.
 
 You can optionally turn shrink-wrapping on/off with the first argument, like `ShrinkWrap(false) {...}`.
+
 </details>
 
 ## License
