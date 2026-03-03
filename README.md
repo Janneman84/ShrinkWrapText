@@ -1,4 +1,4 @@
-<img id="badge" src="https://jitpack.io/v/Janneman84/ShrinkWrapText.svg"> [![XML Compose](https://img.shields.io/badge/XML-Compose-brightgreen)](#)
+<img id="badge" src="https://jitpack.io/v/Janneman84/ShrinkWrapText.svg"> [![XML Compose](https://img.shields.io/badge/XML-Compose-brightgreen)](#) [![Layout](https://img.shields.io/badge/Static/Dynamic-Layout-brightgreen)](#)
 [![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)](#)
 [![KMP](https://img.shields.io/badge/Kotlin-Multiplatform-%237f52ff?logo=kotlin)](#)<img height="1" img width="1" alt="shrinkwrap" src="https://github.com/user-attachments/assets/10178d16-cfbf-465a-a08a-9cbd39a636c3"/>
 
@@ -18,7 +18,7 @@ Have you ever noticed that all chat apps on iOS and Android have one common diff
 
 This shrink-wrapping technology is already being used by Signal messenger.
 
-This package offers a solution for both traditional XML and Compose based apps.
+This package offers solutions for apps that use XML, Compose or Static/Dynamic Layout.
 
 ## Installation
 
