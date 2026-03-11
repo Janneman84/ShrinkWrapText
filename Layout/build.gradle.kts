@@ -43,7 +43,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "Janneman84"
                 artifactId = "Layout"
-                version = "0.5.1"
+                version = "0.5.2"
             }
         }
     }
