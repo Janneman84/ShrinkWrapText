@@ -47,6 +47,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlin.test)
                 // Add KMP dependencies here
                 implementation(libs.compose.material3)
             }
@@ -85,5 +86,5 @@ kotlin {
         }
     }
     group = "Janneman84"
-    version = "0.5.0"
+    version = "0.5.1"
 }

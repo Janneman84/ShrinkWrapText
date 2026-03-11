@@ -9,7 +9,7 @@ import android.text.TextPaint;
 import androidx.annotation.RequiresApi;
 import androidx.core.util.Consumer;
 
-import static java.lang.Math.ceil;
+import static java.lang.Math.max;
 
 public class ShrinkWrap {
 
@@ -69,19 +69,97 @@ public class ShrinkWrap {
             throw new AssertionError("Don't call .build() in the builderConfig callback of the ShrinkWrap.buildStaticLayout() method.");
         }
 
-        if (!shrinkWrap || sl.getLineCount() <= 1) {
+        if (!shrinkWrap) {
             return sl;
         }
 
-        int maxLineWidth = 0;
+        float layoutWidthF = sl.getWidth();
+        float maxCenterWidth = 0f;
+        boolean hasLeft = false;
+        boolean hasRight = false;
+        boolean hasCenter = false;
+        boolean hasUnspecified = false;
+
+        float maxLineWidth = 0;
         for (int i = 0; i < sl.getLineCount(); i++) {
-            maxLineWidth = Math.max(maxLineWidth, (int) ceil(sl.getLineMax(i)));
+//            maxLineWidth = Math.max(maxLineWidth, (int) ceil(sl.getLineMax(i)));
+
+            float left = sl.getLineLeft(i);
+            float right = sl.getLineRight(i);
+
+            float lineWidth = sl.getLineMax(i);
+
+            if (lineWidth > maxLineWidth ) {
+                maxLineWidth = lineWidth;
+            }
+
+            // Check for situations that don't have a clear alignment.
+            if (left < 0f || right > layoutWidthF) {
+                hasUnspecified = true;
+            }
+            else {
+                int ls = sl.getLineStart(i);
+                // If line is wrapped it will have same alignment as previous line, so ignore
+                if (i == 0 || ls <= 0 || sl.getText().charAt(ls - 1) == '\n') {
+
+                    Layout.Alignment alignment = sl.getParagraphAlignment(i);
+                    int textDirection = sl.getParagraphDirection(i);
+
+                    switch (alignment) {
+                        case ALIGN_CENTER: {
+                            hasCenter = true;
+                            maxCenterWidth = max(maxCenterWidth, lineWidth);
+                            break;
+                        }
+                        case ALIGN_NORMAL:
+                            switch (textDirection) {
+                                case 1:
+                                    hasLeft = true;
+                                    break;
+                                case -1:
+                                    hasRight = true;
+                                    break;
+                                default:
+                                    hasUnspecified = true;
+                                    break;
+                            }
+                            break;
+
+                        case ALIGN_OPPOSITE:
+                            switch (textDirection) {
+                                case -1:
+                                    hasLeft = true;
+                                    break;
+                                case 1:
+                                    hasRight = true;
+                                    break;
+                                default:
+                                    hasUnspecified = true;
+                                    break;
+                            }
+                            break;
+                    }
+                }
+            }
         }
-        if (maxLineWidth >= width) {
+
+        float maxLayoutWidth = width; // layoutWidthF // (if (maxWidth >=0 && maxWidth < Integer.MAX_VALUE) maxWidth.toFloat() else maxEms*textSize) - (measuredWidth - layout.width)
+
+        if (hasUnspecified) {
+            return sl; // will place text as is
+        }
+        else if ((hasLeft ^ hasRight) && hasCenter) {
+            maxLineWidth = max(maxLineWidth, ((maxLayoutWidth - maxCenterWidth) * 0.5f) + maxCenterWidth);
+        }
+        else if (hasLeft && hasRight) {
+            maxLineWidth = maxLayoutWidth;
+        }
+
+        if (maxLineWidth == width) {
             return sl;
         }
 
-        StaticLayout.Builder builder2 = StaticLayout.Builder.obtain(source, start, end, paint, maxLineWidth);
+        StaticLayout.Builder builder2 = StaticLayout.Builder.obtain(source, start, end, paint, (int) Math.ceil(maxLineWidth));
 
         if (builderConfig != null) {
             builderConfig.accept(builder2);
@@ -113,13 +191,16 @@ public class ShrinkWrap {
 
             float left = layout.getLineLeft(i);
             float right = layout.getLineRight(i);
-            float lineWidth = right - left;
 
-            boolean lineIsCentered = Math.abs(left + lineWidth + left - layout.getWidth()) < 3f;
-            if (i > 0 && hasCenteredLine != lineIsCentered) {
-                return new RectF(0, 0, layout.getWidth(), layout.getHeight());
+            int ls = layout.getLineStart(i);
+            // If line is wrapped it will have same alignment as previous line, so ignore
+            if (i == 0 || ls <= 0 || layout.getText().charAt(ls - 1) == '\n') {
+                boolean lineIsCentered = layout.getParagraphAlignment(i) == Layout.Alignment.ALIGN_CENTER;
+                if (i > 0 && hasCenteredLine != lineIsCentered) {
+                    return new RectF(0, 0, layout.getWidth(), layout.getHeight());
+                }
+                hasCenteredLine = lineIsCentered;
             }
-            hasCenteredLine = lineIsCentered;
 
             minLeft = Math.min(minLeft, left);
             maxRight = Math.max(maxRight, right);

@@ -1,6 +1,7 @@
 package shrinkwrap.xml
 
 import android.content.Context
+import android.text.Layout
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.core.view.isGone
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import kotlin.math.ceil
+import kotlin.math.max
 
 /**
  * This subclass fixes a sizing issue from the regular `TextView`.
@@ -19,7 +21,7 @@ import kotlin.math.ceil
  * This commonly causes chat bubbles to look a bit different than they do on iOS.
  * `ShrinkWrapTextView` addresses the issue.
  *  Simply replace your regular `TextView` with this and the size will shrink to always tightly fit its content.
- *  You can use the `shrinkWrap` property or the `custom:shrinkWrap` attribute to disable the shrink wrapping.
+ *  You can use the `shrinkWrap` property or the `custom:shrinkWrap` attribute to disable the shrink-wrapping.
  *  Alternatively, instead of using this class you can also use the `measureShrinkWrappedWidth()` function (see its doc for more info).
  */
 
@@ -28,7 +30,7 @@ open class ShrinkWrapTextView : AppCompatTextView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
 
-    /** Set to false to disable shrink wrapping. */
+    /** Set to false to disable shrink-wrapping. */
     var shrinkWrap = true
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -49,7 +51,7 @@ open class ShrinkWrapTextView : AppCompatTextView {
  * This commonly causes chat bubbles to look a bit different than they do on iOS.
  * `ShrinkWrapTextView` addresses the issue.
  *  Simply replace your regular `TextView` with this and the size will shrink to always tightly fit its content.
- *  You can use the `shrinkWrap` property or the `custom:shrinkWrap` attribute to disable the shrink wrapping.
+ *  You can use the `shrinkWrap` property or the `custom:shrinkWrap` attribute to disable the shrink-wrapping.
  *  Alternatively, instead of using this class you can also use the `measureShrinkWrappedWidth()` function (see its doc for more info).
  */
 
@@ -58,7 +60,7 @@ open class ShrinkWrapMaterialTextView : MaterialTextView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
 
-    /** Set to false to disable shrink wrapping. */
+    /** Set to false to disable shrink-wrapping. */
     var shrinkWrap = true
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -81,7 +83,7 @@ open class ShrinkWrapButton : AppCompatButton {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
 
-    /** Set to false to disable shrink wrapping. */
+    /** Set to false to disable shrink-wrapping. */
     var shrinkWrap = true
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -104,7 +106,7 @@ open class ShrinkWrapMaterialButton : MaterialButton {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) { shrinkWrap = checkShrinkWrapAttribute(attrs) }
 
-    /** Set to false to disable shrink wrapping. */
+    /** Set to false to disable shrink-wrapping. */
     var shrinkWrap = true
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -119,7 +121,7 @@ open class ShrinkWrapMaterialButton : MaterialButton {
 }
 
 /**
- * If you want to shrink wrap your TextView but you can't use the ShrinkWrapTextView subclass,
+ * If you want to shrink-wrap your TextView but you can't use the ShrinkWrapTextView subclass,
  * you can use this function instead. Just override onMeasure() in your own TextView subclass exactly like this:
  *
  * Kotlin:
@@ -192,8 +194,82 @@ private fun TextView.actuallyMeasureShrinkWrappedWidth(): Int {
         return measuredWidth
     }
 
+    val layoutWidthF = layout.width.toFloat()
+    var maxCenterWidth = 0f
+    var hasLeft = false
+    var hasRight = false
+    var hasCenter = false
+    var hasUnspecified = false
+    var maxLineWidth: Float = (minimumWidth - (measuredWidth - layout.width)).toFloat()
+
+    for (i in 0 until layout.lineCount) {
+
+        val left = layout.getLineLeft(i)
+        val right = layout.getLineRight(i)
+
+//        val lineWidth = right - left
+        val lineWidth = layout.getLineMax(i)
+        if (lineWidth > maxLineWidth ) {
+            maxLineWidth = lineWidth
+        }
+
+        // Check for situations that don't have a clear alignment.
+        if (left < 0f || right > layoutWidthF) {
+            hasUnspecified = true
+        }
+        else {
+
+            val ls = layout.getLineStart(i)
+            // If line is wrapped it will have same alignment as previous line, so ignore
+            if (i == 0 || ls <= 0 || layout.text[ls - 1] == '\n') {
+
+                val alignment = layout.getParagraphAlignment(i)
+                val textDirection = layout.getParagraphDirection(i)
+
+                when (alignment) {
+                    Layout.Alignment.ALIGN_CENTER -> {
+                        hasCenter = true
+                        maxCenterWidth = max(maxCenterWidth, lineWidth)
+                    }
+
+                    Layout.Alignment.ALIGN_NORMAL -> {
+                        when (textDirection) {
+                            1 -> hasLeft = true
+                            -1 -> hasRight = true
+                            else -> hasUnspecified = true
+                        }
+                    }
+
+                    Layout.Alignment.ALIGN_OPPOSITE -> {
+                        when (textDirection) {
+                            -1 -> hasLeft = true
+                            1 -> hasRight = true
+                            else -> hasUnspecified = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    val maxLayoutWidth = layoutWidthF // (if (maxWidth >=0 && maxWidth < Integer.MAX_VALUE) maxWidth.toFloat() else maxEms*textSize) - (measuredWidth - layout.width)
+
+    if (hasUnspecified) {
+        maxLineWidth = layoutWidthF // will place text as is
+    }
+    else if ((hasLeft xor hasRight) && hasCenter) {
+        maxLineWidth = max(maxLineWidth, ((maxLayoutWidth - maxCenterWidth) * 0.5f) + maxCenterWidth)
+    }
+    else if (hasLeft && hasRight) {
+        if (measuredWidth == maxWidth) {
+            maxLineWidth = layoutWidthF
+        } else {
+            maxLineWidth = maxLayoutWidth
+        }
+    }
+
     // Replace full text width with shrink-wrapped text width.
-    val shrinkWrappedWidth = measuredWidth - layout.width + ceil((0 until layout.lineCount).maxOfOrNull { layout.getLineMax(it) } ?: 0.0f).toInt()
+    val shrinkWrappedWidth = measuredWidth - layout.width + ceil(maxLineWidth).toInt()
 
     if (shrinkWrappedWidth >= measuredWidth) {
         return measuredWidth

@@ -18,53 +18,153 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.ResolvedTextDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.TextUnit
 import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.round
+import kotlin.test.assertTrue
 
-private class SWSettings(val shrinkWrap: Boolean, var maxLineWidth: Float)
+private class SWSettings(val shrinkWrap: Boolean, var maxLineWidth: Float? = null, var xOffset: Float? = null, var textWidth: Int = 0, var constraints: Constraints? = null)
 
 private fun getMeasureText(s: SWSettings): MeasureScope.(Measurable, Constraints) -> MeasureResult {
     return { measurable, constraints ->
-        val placeable1 = measurable.measure(constraints)
+        s.constraints = constraints
+        var placeableWidth: Int? = null
+        var placeableX = 0
+        var placeable = measurable.measure(constraints)
         // onTextLayout gets called right after measure(), where maxLineWidth is determined
 
-        // If fewer than 2 lines, maxLineWidth stays -1f and the text is placed as is
-        if (!s.shrinkWrap || s.maxLineWidth == -1f || constraints.maxWidth <= constraints.minWidth) {
-            layout(placeable1.width, placeable1.height) {
-                placeable1.placeRelative(0, 0)
-            }
-        } else {
-            // Measure again, this lays out the text, now with the maxLineWidth as maxWidth.
-            // This ensures any right or center aligned text shows properly.
-            val placeable2 = measurable.measure(
+        assertTrue(!s.shrinkWrap || s.textWidth == placeable.width,
+            "ShrinkWrap text size discrepancy detected. Make sure to always put .layout(measureText) at the end of the modifier chain.")
+
+        // If fewer than 2 lines, maxLineWidth stays null and the text is placed as is
+        if (!s.shrinkWrap || s.maxLineWidth == null || constraints.maxWidth <= constraints.minWidth) {
+            // don't do nuthing
+        }
+        // If text has no mixed alignment, xOffset is determined and used to place the text offsetted
+        else if (s.xOffset != null) {
+            placeableWidth = ceil(s.maxLineWidth!!).toInt()
+            placeableX = 0-round(s.xOffset!!).toInt()
+        }
+        // Measure again, this lays out the text again, now with the maxLineWidth as maxWidth.
+        // This ensures text with mixed alignment to properly shrink-wrap.
+        else {
+            placeable = measurable.measure(
                 Constraints(
-                    minWidth = constraints.minWidth,
-                    maxWidth = ceil(s.maxLineWidth).toInt(),
+                    minWidth = ceil(s.maxLineWidth!!).toInt(),
+                    maxWidth = ceil(s.maxLineWidth!!).toInt(),
                     minHeight = constraints.minHeight,
                     maxHeight = constraints.maxHeight
                 )
             )
-            // onTextLayout gets called again, but does nothing we need now
+            // onTextLayout gets called again here, but does nothing we need now.
+        }
 
-            layout(ceil(s.maxLineWidth).toInt(), placeable2.height) {
-                placeable2.placeRelative(0, 0)
-                s.maxLineWidth = -1f
-            }
+        layout(placeableWidth ?: placeable.width, placeable.height) {
+            placeable.placeRelative(placeableX, 0)
+            s.maxLineWidth = null // just in case
         }
     }
 }
 
 private fun getOnTextLayout(s: SWSettings, onTextLayout: ((TextLayoutResult) -> Unit)?): (TextLayoutResult) -> Unit {
     return {
-        if (s.shrinkWrap && s.maxLineWidth == -1f && it.lineCount > 1) {
+
+        if (s.shrinkWrap && s.maxLineWidth == null && it.lineCount > 1) {
+
+            val widthF = it.size.width.toFloat()
+            s.textWidth = it.size.width
+            s.xOffset = null
+            var maxCenterWidth = 0f
+
+            var hasLeft = false
+            var hasRight = false
+            var hasCenter = false
+            var hasUnspecified = false
+
+            s.maxLineWidth = s.constraints!!.minWidth.toFloat()
+
             for (i in 0 until it.lineCount) {
-                val width = it.getLineRight(i) - it.getLineLeft(i)
-                if (width > s.maxLineWidth) {
-                    s.maxLineWidth = width
+
+                val left = it.getLineLeft(i)
+                val right = it.getLineRight(i)
+
+                val lineWidth = right - left
+                if (lineWidth > (s.maxLineWidth ?: -1f)) {
+                    s.maxLineWidth = lineWidth
+                }
+                // Check alignment of the line. If it's different than previous lines,
+                // mark text as mixed alignment by settings xOffset to -1f
+
+                if (left < 0f || right > widthF) {
+                    hasUnspecified = true
+                }
+                else {
+                    val lineStartOffset = it.getLineStart(i)
+
+                    // Zoek de ParagraphStyle die op dit punt actief is
+                    val paragraphStyle = it.layoutInput.text.paragraphStyles.find {
+                        lineStartOffset >= it.start && lineStartOffset < it.end
+                    }?.item
+
+                    val al = paragraphStyle?.textAlign ?: it.layoutInput.style.textAlign
+
+                    when (al) {
+                        TextAlign.Center -> {
+                            hasCenter = true
+                            maxCenterWidth = max(maxCenterWidth, lineWidth)
+                        }
+                        TextAlign.Left -> {
+                            hasLeft = true
+                        }
+                        TextAlign.Right -> {
+                            hasRight = true
+                        }
+                        TextAlign.Start -> {
+                            when (it.getParagraphDirection(lineStartOffset)) {
+                                ResolvedTextDirection.Ltr -> hasLeft = true
+                                ResolvedTextDirection.Rtl -> hasRight = true
+                            }
+                        }
+                        TextAlign.End -> {
+                            when (it.getParagraphDirection(lineStartOffset)) {
+                                ResolvedTextDirection.Rtl -> hasLeft = true
+                                ResolvedTextDirection.Ltr -> hasRight = true
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (hasUnspecified) {
+                s.maxLineWidth = null // will place text as is
+            }
+            else if ((hasLeft xor hasRight) && hasCenter) {
+                s.maxLineWidth = max(s.maxLineWidth!!, ((s.constraints!!.maxWidth - maxCenterWidth) * 0.5f) + maxCenterWidth)
+                s.xOffset = null
+            }
+            else if (hasLeft && hasRight) {
+                s.xOffset = null
+
+                if (it.size.width == s.constraints!!.maxWidth) {
+                    s.maxLineWidth = null
+                } else {
+                    s.maxLineWidth = s.constraints!!.maxWidth.toFloat()
+                }
+            } else {
+                if (hasLeft) {
+                    s.xOffset = 0f
+                }
+                else if (hasRight) {
+                    s.xOffset = widthF - s.maxLineWidth!!
+                }
+                else if (hasCenter) {
+                    s.xOffset = (widthF - s.maxLineWidth!!) * 0.5f
                 }
             }
         } else {
@@ -99,7 +199,7 @@ fun ShrinkWrap(
         measureText: MeasureScope.(Measurable, Constraints) -> MeasureResult,
         onTextLayout: (TextLayoutResult) -> Unit) -> Unit
 ) {
-    val settings = SWSettings(shrinkWrap, -1f)
+    val settings = SWSettings(shrinkWrap)
     textContent(
         getMeasureText(settings),
         getOnTextLayout(settings, null)
@@ -131,7 +231,7 @@ private fun ShrinkWrapText(
     shrinkWrap: Boolean,
     basic: Boolean = false
 ) {
-    val settings = SWSettings(shrinkWrap, -1f)
+    val settings = SWSettings(shrinkWrap)
     val measureText = getMeasureText(settings)
     val textLayout = getOnTextLayout(settings, onTextLayout)
 

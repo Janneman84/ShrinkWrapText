@@ -44,9 +44,9 @@ Add one or more of below's implementations to your apps' `build.gradle`:
 
 ```kotlin
 dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapText:XML:0.5.0") // XML
-	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.5.0") // Compose
-	implementation("com.github.Janneman84.ShrinkWrapText:Layout:0.5.0") // Static/DynamicLayout
+	implementation("com.github.Janneman84.ShrinkWrapText:XML:0.5.1") // XML
+	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.5.1") // Compose
+	implementation("com.github.Janneman84.ShrinkWrapText:Layout:0.5.1") // Static/DynamicLayout
 }
 ```
 </details>
@@ -59,20 +59,20 @@ With shared UI, in `build.gradle` add dependency to `commonMain.dependencies` to
 
 ```kotlin
 commonMain.dependencies {
-	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.5.0")
+	implementation("com.github.Janneman84.ShrinkWrapText:Compose:0.5.1")
 }
 ```
 Or use specific targets:
 ```
-com.github.Janneman84.ShrinkWrapText:Compose-wasm-js:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-macosarm64:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-iosx64:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-macosx64:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-android:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-jvm:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-js:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-iossimulatorarm64:0.5.0
-com.github.Janneman84.ShrinkWrapText:Compose-iosarm64:0.5.0
+com.github.Janneman84.ShrinkWrapText:Compose-wasm-js:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-macosarm64:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-iosx64:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-macosx64:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-android:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-jvm:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-js:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-iossimulatorarm64:0.5.1
+com.github.Janneman84.ShrinkWrapText:Compose-iosarm64:0.5.1
 ```
 </details>
 
@@ -254,7 +254,7 @@ ShrinkWrap.buildStaticLayout(myText, 0, myText.length(), myPaint, 500, true, b -
 Make sure you DON'T call `.build()` inside the builder callback, this will be done for you.
 
 ### Option 2
-This option is a bit faster, works with both `StaticLayout` and `DynamicLayout` and works on all versions of Android. However, shrink-wrapping won't work if the text has mixed alignments. In that case it will just return its full size.
+This option is a bit faster, works with both `StaticLayout` and `DynamicLayout` and works on all versions of Android. However, it's a bit more involved.
 
 Unlike option 1 you create your layout like normal. Then, before you draw you call `ShrinkWrap.getLayoutRect()` to get the rect that tightly fits around the text, which you can use to measure and translate the drawing accordingly.
 
