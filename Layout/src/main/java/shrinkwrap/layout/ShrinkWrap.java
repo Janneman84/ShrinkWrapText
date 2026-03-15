@@ -68,7 +68,7 @@ public class ShrinkWrap {
         try {
             sl = builder.build();
         } catch (Exception e) {
-            throw new AssertionError("Don't call .build() in the builderConfig callback of the ShrinkWrap.buildStaticLayout() method.");
+            throw new AssertionError("\n\nDon't call .build() in the builderConfig callback of the ShrinkWrap.buildStaticLayout() method.\n");
         }
 
         if (!shrinkWrap || minWidth >= maxWidth) {
@@ -80,13 +80,17 @@ public class ShrinkWrap {
         boolean hasLeft = false;
         boolean hasRight = false;
         boolean hasCenter = false;
-
         float maxLineWidth = 0;
-        for (int i = 0; i < sl.getLineCount(); i++) {
-//            maxLineWidth = Math.max(maxLineWidth, (int) ceil(sl.getLineMax(i)));
 
-            float left = sl.getLineLeft(i);
-            float right = sl.getLineRight(i);
+        Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+        int textDirection = 1;
+
+        for (int i = 0; i < sl.getLineCount(); i++) {
+
+            // Check for situations that don't have a clear alignment.
+            if (sl.getLineLeft(i) < 0f || sl.getLineRight(i) > layoutWidthF) {
+                return sl;
+            }
 
             float lineWidth = sl.getLineMax(i);
 
@@ -94,50 +98,43 @@ public class ShrinkWrap {
                 maxLineWidth = lineWidth;
             }
 
-            // Check for situations that don't have a clear alignment.
-            if (left < 0f || right > layoutWidthF) {
-                return sl;
+            // If line is wrapped it will have same alignment as previous line, so skip
+            int ls = sl.getLineStart(i);
+            if (i == 0 || ls <= 0 || sl.getText().charAt(ls - 1) == '\n') {
+                alignment = sl.getParagraphAlignment(i);
+                textDirection = sl.getParagraphDirection(i);
             }
-            else {
-                int ls = sl.getLineStart(i);
-                // If line is wrapped it will have same alignment as previous line, so ignore
-                if (i == 0 || ls <= 0 || sl.getText().charAt(ls - 1) == '\n') {
 
-                    Layout.Alignment alignment = sl.getParagraphAlignment(i);
-                    int textDirection = sl.getParagraphDirection(i);
-
-                    switch (alignment) {
-                        case ALIGN_CENTER: {
-                            hasCenter = true;
-                            maxCenterWidth = max(maxCenterWidth, lineWidth);
-                            break;
-                        }
-                        case ALIGN_NORMAL:
-                            switch (textDirection) {
-                                case 1:
-                                    hasLeft = true;
-                                    break;
-                                case -1:
-                                    hasRight = true;
-                                    break;
-                                default:
-                                    return sl;
-                            }
-                            break;
-                        case ALIGN_OPPOSITE:
-                            switch (textDirection) {
-                                case -1:
-                                    hasLeft = true;
-                                    break;
-                                case 1:
-                                    hasRight = true;
-                                    break;
-                                default:
-                                    return sl;
-                            }
-                            break;
-                    }
+            switch (alignment) {
+                case ALIGN_CENTER: {
+                    hasCenter = true;
+                    maxCenterWidth = max(maxCenterWidth, lineWidth);
+                    break;
                 }
+                case ALIGN_NORMAL:
+                    switch (textDirection) {
+                        case 1:
+                            hasLeft = true;
+                            break;
+                        case -1:
+                            hasRight = true;
+                            break;
+                        default:
+                            return sl;
+                    }
+                    break;
+                case ALIGN_OPPOSITE:
+                    switch (textDirection) {
+                        case -1:
+                            hasLeft = true;
+                            break;
+                        case 1:
+                            hasRight = true;
+                            break;
+                        default:
+                            return sl;
+                    }
+                    break;
             }
         }
 
@@ -175,21 +172,30 @@ public class ShrinkWrap {
      */
     public static RectF getLayoutRect(Layout layout, float minWidth, Boolean shrinkWrap) {
 
-        if (!shrinkWrap || minWidth >= layout.getWidth()) {
-            return new RectF(0, 0, layout.getWidth(), layout.getHeight());
-        }
+        RectF rect = new RectF(0, 0, layout.getWidth(), layout.getHeight());
 
-        float minLeft = 1000000.0f;
-        float maxRight = -1000000.0f;
+        if (!shrinkWrap || minWidth >= layout.getWidth()) {
+            return rect;
+        }
 
         boolean hasLeft = false;
         boolean hasRight = false;
         boolean hasCenter = false;
         boolean hasUnspecified = false;
 
+        float maxLineWidth = 0;
+
         for (int i = 0; i < layout.getLineCount(); i++) {
 
+            // Check for situations that don't have a clear alignment.
+            if (layout.getLineLeft(i) < 0f || layout.getLineRight(i) > layout.getWidth()) {
+                return rect;
+            }
+
+            maxLineWidth = Math.max(maxLineWidth, layout.getLineMax(i));
+
             int ls = layout.getLineStart(i);
+
             // If line is wrapped it will have same alignment as previous line, so ignore
             if (i == 0 || ls <= 0 || layout.getText().charAt(ls - 1) == '\n') {
 
@@ -230,25 +236,21 @@ public class ShrinkWrap {
                 }
 
                 if (hasUnspecified || (hasLeft && hasRight) || (hasLeft && hasCenter) || (hasCenter && hasRight)) {
-                    return new RectF(0, 0, layout.getWidth(), layout.getHeight());
+                    return rect;
                 }
             }
-            minLeft = Math.min(minLeft, layout.getLineLeft(i));
-            maxRight = Math.max(maxRight, layout.getLineRight(i));
         }
 
-        float extraWidth = Math.max(0, minWidth - (maxRight - minLeft));
-        if (extraWidth > 0) {
-            if (hasLeft) {
-                maxRight = Math.min(maxRight + extraWidth, layout.getWidth());
-            } else if (hasRight) {
-                minLeft = Math.max(minLeft - extraWidth, 0);
-            } else if (hasCenter) {
-                minLeft = Math.max(minLeft - (extraWidth * 0.5f), 0);
-                maxRight = Math.min(maxRight + (extraWidth * 0.5f), layout.getWidth());
-            }
-        }
+        maxLineWidth = Math.max(minWidth, maxLineWidth);
 
-        return new RectF(minLeft, 0, maxRight, layout.getHeight());
+        if (hasLeft) {
+            rect.right = maxLineWidth;
+        } else if (hasRight) {
+            rect.left = rect.right - maxLineWidth;
+         } else if (hasCenter) {
+            rect.left = (rect.right - maxLineWidth) * 0.5f;
+            rect.right = rect.left + maxLineWidth;
+        }
+        return rect;
     }
 }

@@ -40,7 +40,7 @@ private fun getMeasureText(s: SWSettings): MeasureScope.(Measurable, Constraints
         // onTextLayout gets called right after measure(), where maxLineWidth is determined
 
         assertTrue(!s.shrinkWrap || s.textWidth == placeable.width,
-            "ShrinkWrap text size discrepancy detected. Make sure to always put .layout(measureText) at the end of the modifier chain.")
+            "\n\nShrinkWrap text size discrepancy detected. Make sure to always put .layout(measureText) at the end of the modifier chain.\n")
 
         // If fewer than 2 lines, maxLineWidth stays null and the text is placed as is
         if (!s.shrinkWrap || s.maxLineWidth == null || constraints.maxWidth <= constraints.minWidth) {
@@ -95,6 +95,11 @@ private fun getOnTextLayout(s: SWSettings, onTextLayout: ((TextLayoutResult) -> 
                 val left = it.getLineLeft(i)
                 val right = it.getLineRight(i)
 
+                if (left < 0f || right > widthF) {
+                    hasUnspecified = true
+                    break
+                }
+
                 val lineWidth = right - left
                 if (lineWidth > (s.maxLineWidth ?: -1f)) {
                     s.maxLineWidth = lineWidth
@@ -102,42 +107,36 @@ private fun getOnTextLayout(s: SWSettings, onTextLayout: ((TextLayoutResult) -> 
                 // Check alignment of the line. If it's different than previous lines,
                 // mark text as mixed alignment by settings xOffset to -1f
 
-                if (left < 0f || right > widthF) {
-                    hasUnspecified = true
-                    break
-                }
-                else {
-                    val lineStartOffset = it.getLineStart(i)
+                val lineStartOffset = it.getLineStart(i)
 
-                    // Search the ParagraphStyle that is active at this point
-                    val paragraphStyle = it.layoutInput.text.paragraphStyles.find {
-                        lineStartOffset >= it.start && lineStartOffset < it.end
-                    }?.item
+                // Search the ParagraphStyle that is active at this point
+                val paragraphStyle = it.layoutInput.text.paragraphStyles.find {
+                    lineStartOffset >= it.start && lineStartOffset < it.end
+                }?.item
 
-                    val al = paragraphStyle?.textAlign ?: it.layoutInput.style.textAlign
+                val al = paragraphStyle?.textAlign ?: it.layoutInput.style.textAlign
 
-                    when (al) {
-                        TextAlign.Center -> {
-                            hasCenter = true
-                            maxCenterWidth = max(maxCenterWidth, lineWidth)
+                when (al) {
+                    TextAlign.Center -> {
+                        hasCenter = true
+                        maxCenterWidth = max(maxCenterWidth, lineWidth)
+                    }
+                    TextAlign.Left -> {
+                        hasLeft = true
+                    }
+                    TextAlign.Right -> {
+                        hasRight = true
+                    }
+                    TextAlign.Start -> {
+                        when (it.getParagraphDirection(lineStartOffset)) {
+                            ResolvedTextDirection.Ltr -> hasLeft = true
+                            ResolvedTextDirection.Rtl -> hasRight = true
                         }
-                        TextAlign.Left -> {
-                            hasLeft = true
-                        }
-                        TextAlign.Right -> {
-                            hasRight = true
-                        }
-                        TextAlign.Start -> {
-                            when (it.getParagraphDirection(lineStartOffset)) {
-                                ResolvedTextDirection.Ltr -> hasLeft = true
-                                ResolvedTextDirection.Rtl -> hasRight = true
-                            }
-                        }
-                        TextAlign.End -> {
-                            when (it.getParagraphDirection(lineStartOffset)) {
-                                ResolvedTextDirection.Rtl -> hasLeft = true
-                                ResolvedTextDirection.Ltr -> hasRight = true
-                            }
+                    }
+                    TextAlign.End -> {
+                        when (it.getParagraphDirection(lineStartOffset)) {
+                            ResolvedTextDirection.Rtl -> hasLeft = true
+                            ResolvedTextDirection.Ltr -> hasRight = true
                         }
                     }
                 }

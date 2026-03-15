@@ -86,5 +86,5 @@ kotlin {
         }
     }
     group = "Janneman84"
-    version = "0.5.4"
+    version = "0.6.0"
 }

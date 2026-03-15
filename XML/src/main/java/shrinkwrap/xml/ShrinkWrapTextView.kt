@@ -143,10 +143,10 @@ open class ShrinkWrapMaterialButton : MaterialButton {
 fun TextView.measureShrinkWrappedWidth(widthMeasureSpec: Int, shrinkWrap: Boolean = true): Int {
 
     assert(this !is ShrinkWrapTextView, {
-        "This function should not be called from an instance of ShrinkWrapTextView (or subclass)."
+        "\n\nMake sure measureShrinkWrappedWidth() is not called from an instance or subclass of ShrinkWrapTextView.\nEither remove the call or change the class.\n"
     })
     assert(layout != null, {
-        "No layout, make sure to only call this function inside onMeasure() and super.onMeasure() is called before this."
+        "\n\nMake sure to only call measureShrinkWrappedWidth() inside onMeasure(), after calling super.onMeasure().\n"
     })
 
     return if (shrinkWrap) actuallyMeasureShrinkWrappedWidth(widthMeasureSpec) else measuredWidth
@@ -168,10 +168,8 @@ private fun TextView.checkShrinkWrapAttribute(attrs: AttributeSet?): Boolean {
 
 private fun TextView.actuallyMeasureShrinkWrappedWidth(widthMeasureSpec: Int): Int {
 
-    val lineCount = layout.lineCount
-
     // No magic needed if there is only 1 line.
-    if (lineCount <= 1 || isGone || View.MeasureSpec.getMode(widthMeasureSpec) != View.MeasureSpec.AT_MOST) {
+    if (layout.lineCount <= 1 || isGone || View.MeasureSpec.getMode(widthMeasureSpec) != View.MeasureSpec.AT_MOST) {
         return measuredWidth
     }
 
@@ -182,49 +180,45 @@ private fun TextView.actuallyMeasureShrinkWrappedWidth(widthMeasureSpec: Int): I
     var hasCenter = false
     var maxLineWidth: Float = (minimumWidth - (measuredWidth - layout.width)).toFloat()
 
+    var alignment = Layout.Alignment.ALIGN_NORMAL
+    var textDirection = 1
+
     for (i in 0 until layout.lineCount) {
 
-        val left = layout.getLineLeft(i)
-        val right = layout.getLineRight(i)
+        // Check for situations that don't have a clear alignment.
+        if (layout.getLineLeft(i) < 0f || layout.getLineRight(i) > layoutWidthF) {
+            return measuredWidth
+        }
 
-//        val lineWidth = right - left
         val lineWidth = layout.getLineMax(i)
         if (lineWidth > maxLineWidth ) {
             maxLineWidth = lineWidth
         }
 
-        // Check for situations that don't have a clear alignment.
-        if (left < 0f || right > layoutWidthF) {
-            return measuredWidth
+        // If line is wrapped it will have same alignment as previous line, so skip
+        val ls = layout.getLineStart(i)
+        if (i == 0 || ls <= 0 || layout.text[ls - 1] == '\n') {
+            alignment = layout.getParagraphAlignment(i)
+            textDirection = layout.getParagraphDirection(i)
         }
-        else {
 
-            val ls = layout.getLineStart(i)
-            // If line is wrapped it will have same alignment as previous line, so ignore
-            if (i == 0 || ls <= 0 || layout.text[ls - 1] == '\n') {
-
-                val alignment = layout.getParagraphAlignment(i)
-                val textDirection = layout.getParagraphDirection(i)
-
-                when (alignment) {
-                    Layout.Alignment.ALIGN_CENTER -> {
-                        hasCenter = true
-                        maxCenterWidth = max(maxCenterWidth, lineWidth)
-                    }
-                    Layout.Alignment.ALIGN_NORMAL -> {
-                        when (textDirection) {
-                            1 -> hasLeft = true
-                            -1 -> hasRight = true
-                            else -> return measuredWidth
-                        }
-                    }
-                    Layout.Alignment.ALIGN_OPPOSITE -> {
-                        when (textDirection) {
-                            -1 -> hasLeft = true
-                            1 -> hasRight = true
-                            else -> return measuredWidth
-                        }
-                    }
+        when (alignment) {
+            Layout.Alignment.ALIGN_CENTER -> {
+                hasCenter = true
+                maxCenterWidth = max(maxCenterWidth, lineWidth)
+            }
+            Layout.Alignment.ALIGN_NORMAL -> {
+                when (textDirection) {
+                    1 -> hasLeft = true
+                    -1 -> hasRight = true
+                    else -> return measuredWidth
+                }
+            }
+            Layout.Alignment.ALIGN_OPPOSITE -> {
+                when (textDirection) {
+                    -1 -> hasLeft = true
+                    1 -> hasRight = true
+                    else -> return measuredWidth
                 }
             }
         }
